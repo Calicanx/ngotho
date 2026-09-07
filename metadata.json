@@ -1,0 +1,6 @@
+{
+  "name": "Ngotho - Rental Houses Management",
+  "description": "Comprehensive property and rental house management platform for landlords and property managers to oversee units, tenants, leases, rent collection, and maintenance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
