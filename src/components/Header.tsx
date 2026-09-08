@@ -11,7 +11,10 @@ import {
   Search,
   ChevronDown,
   Globe,
-  LayoutDashboard
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  User
 } from 'lucide-react';
 import { AppNotification } from '../types';
 
@@ -26,6 +29,8 @@ interface HeaderProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   activeTab?: string;
+  userRole?: 'landlord' | 'tenant' | null;
+  onSignOut: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -39,11 +44,14 @@ export const Header: React.FC<HeaderProps> = ({
   searchQuery,
   onSearchChange,
   activeTab = 'landing',
+  userRole,
+  onSignOut,
 }) => {
   const [showQuickActions, setShowQuickActions] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
+  const isLandlord = userRole === 'landlord';
 
   return (
     <header className="sticky top-0 z-40 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#E5E0D8]">
@@ -104,12 +112,17 @@ export const Header: React.FC<HeaderProps> = ({
                 id="btn-portal-switch"
                 onClick={() => onNavigateTab('dashboard')}
                 className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#1A1A1A] bg-white hover:bg-[#EFEAE1] rounded-lg transition-colors border border-[#E5E0D8] shadow-2xs"
-                title="Open Landlord & Property Management Dashboard"
+                title={isLandlord ? 'Open Landlord & Property Management Dashboard' : 'Sign in to access the management portal'}
               >
-                <LayoutDashboard className="w-3.5 h-3.5 text-[#7A571A]" />
-                <span className="hidden sm:inline">Management Console</span>
+                {isLandlord ? (
+                  <LayoutDashboard className="w-3.5 h-3.5 text-[#7A571A]" />
+                ) : (
+                  <LogIn className="w-3.5 h-3.5 text-[#7A571A]" />
+                )}
+                <span className="hidden sm:inline">{isLandlord ? 'Management Console' : 'Sign In'}</span>
               </button>
             ) : (
+              <>
               <button
                 id="btn-landing-switch"
                 onClick={() => onNavigateTab('landing')}
@@ -119,9 +132,22 @@ export const Header: React.FC<HeaderProps> = ({
                 <Globe className="w-3.5 h-3.5 text-[#7A571A]" />
                 <span className="hidden sm:inline">Public Site</span>
               </button>
+              {isLandlord && (
+                <button
+                  id="btn-sign-out"
+                  onClick={onSignOut}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#8C2C24] bg-white hover:bg-[#FDF0EE] rounded-lg transition-colors border border-[#E5E0D8] shadow-2xs"
+                  title="Sign out of the management portal"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Sign Out</span>
+                </button>
+              )}
+              </>
             )}
 
-            {/* Quick Actions Dropdown */}
+            {/* Quick Actions Dropdown - Landlord only */}
+            {isLandlord && (
             <div className="relative">
               <button
                 id="btn-quick-actions"
@@ -209,8 +235,10 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               )}
             </div>
+            )}
 
-            {/* Notifications Center */}
+            {/* Notifications Center - Landlord only */}
+            {isLandlord && (
             <div className="relative">
               <button
                 id="btn-notifications-toggle"
@@ -272,6 +300,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               )}
             </div>
+            )}
           </div>
         </div>
       </div>

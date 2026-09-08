@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Property, 
   Unit, 
@@ -50,7 +50,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
   // Search & Filter State
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
-  const [maxRent, setMaxRent] = useState<number>(60000);
+  const [maxRent, setMaxRent] = useState<number>(100000);
   const [vacantOnly, setVacantOnly] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -71,6 +71,14 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
   const [bookingTime, setBookingTime] = useState<string>('10:00 AM');
   const [bookingNotes, setBookingNotes] = useState<string>('');
   const [bookingSuccess, setBookingSuccess] = useState<boolean>(false);
+
+  // On first open, always show the "How to Pay Your Rent with M-PESA" section
+  useEffect(() => {
+    const el = document.getElementById('section-paybill');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
 
   // Filtered units
   const filteredUnits = useMemo(() => {
@@ -106,6 +114,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
     });
   }, [units, properties, selectedPropertyId, selectedType, maxRent, vacantOnly, searchQuery]);
 
+  // Featured estate for the hero card (prefer a Westlands, Nairobi estate)
+  const featuredProperty = properties.find((p) => p.location.toLowerCase().includes('westlands')) || properties[0];
+
   // Handle viewing booking submission
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,13 +149,13 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-center sm:text-left">
             <span className="inline-block w-2 h-2 rounded-full bg-[#3B7A57] animate-pulse"></span>
-            <span className="font-medium text-[#1A1A1A]">Now Leasing for 2026:</span>
-            <span className="font-serif italic">Units available across Westlands, Ruiru & Kilimani estates.</span>
+            <span className="font-medium text-[#1A1A1A]">Houses Available Now:</span>
+            <span className="font-serif italic">In Nairobi, Nakuru, Mombasa, Kisumu, Eldoret, Thika & many more towns.</span>
           </div>
           <div className="flex items-center gap-4 text-[11px]">
-            <a href="tel:+254700123456" className="hover:text-[#1A1A1A] flex items-center gap-1 font-mono transition-colors">
+            <a href="tel:+254732075012" className="hover:text-[#1A1A1A] flex items-center gap-1 font-mono transition-colors">
               <Phone className="w-3 h-3 text-[#7A571A]" />
-              <span>+254 700 123 456</span>
+              <span>0732 075 012</span>
             </a>
             <span className="text-[#D8D2C5]">|</span>
             <button
@@ -168,20 +179,20 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF8F5] border border-[#E5E0D8] text-[11px] text-[#736E65]">
                 <Award className="w-3.5 h-3.5 text-[#7A571A]" />
-                <span className="font-medium uppercase tracking-wider text-[#1A1A1A]">Ngotho Residential Estates</span>
+                <span className="font-medium uppercase tracking-wider text-[#1A1A1A]">Ngotho Houses</span>
                 <span>•</span>
-                <span className="font-serif italic">Nairobi & Kiambu Portfolio</span>
+                <span className="font-serif italic">Nairobi & Beyond</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#1A1A1A] tracking-tight leading-[1.15]">
-                Thoughtfully built homes. <br />
-                <span className="font-normal italic text-[#4A453E]">Managed with complete integrity.</span>
+                Find a good, safe house <br />
+                <span className="font-normal italic text-[#4A453E]">to call your home.</span>
               </h1>
 
               <p className="text-base text-[#615C53] leading-relaxed max-w-2xl font-serif">
-                Experience dignified residential living in Westlands, Ruiru, Kilimani, and Nakuru. 
-                Enjoy guaranteed borehole water, individual sub-meters, transparent M-PESA paybill receipts, 
-                and prompt on-site caretaker response.
+                We rent out good houses in Nairobi, Nakuru, Mombasa, Kisumu and Thika.
+                You get water all day, your own electricity meter, and an instant M-PESA
+                receipt every time you pay rent. If something breaks, our fundi comes quickly.
               </p>
 
               {/* Action Buttons */}
@@ -192,7 +203,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                   className="inline-flex items-center gap-2 px-5 py-3 text-xs font-semibold text-[#F9F7F2] bg-[#1A1A1A] hover:bg-[#2E2A26] active:bg-black rounded-lg transition-colors shadow-xs border border-[#1A1A1A]"
                 >
                   <Search className="w-3.5 h-3.5 text-[#E5D7B7]" />
-                  <span>View Available Units</span>
+                  <span>See the Houses</span>
                 </a>
 
                 <a
@@ -201,7 +212,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                   className="inline-flex items-center gap-2 px-5 py-3 text-xs font-semibold text-[#1A1A1A] bg-[#FAF8F5] hover:bg-[#EFEAE1] rounded-lg transition-colors border border-[#E5E0D8]"
                 >
                   <Calendar className="w-3.5 h-3.5 text-[#7A571A]" />
-                  <span>Schedule a Physical Viewing</span>
+                  <span>Book a Viewing</span>
                 </a>
 
                 <button
@@ -209,7 +220,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                   id="btn-hero-mgmt-portal"
                   className="inline-flex items-center gap-1.5 px-4 py-3 text-xs font-medium text-[#736E65] hover:text-[#1A1A1A] transition-colors"
                 >
-                  <span>Landlord Console</span>
+                  <span>Landlord Sign In</span>
                   <ExternalLink className="w-3.5 h-3.5 text-[#7A571A]" />
                 </button>
               </div>
@@ -217,22 +228,22 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               {/* Trust Indicators */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-[#E5E0D8]/80 text-xs">
                 <div>
-                  <p className="font-serif font-bold text-lg text-[#1A1A1A]">4 Estates</p>
-                  <p className="text-[11px] text-[#736E65] font-serif italic">Nairobi & Kiambu</p>
+                  <p className="font-serif font-bold text-lg text-[#1A1A1A]">{properties.length} Estates</p>
+                  <p className="text-[11px] text-[#736E65] font-serif italic">Across Kenya</p>
                 </div>
                 <div>
                   <p className="font-serif font-bold text-lg text-[#1A1A1A]">
                     {units.filter((u) => u.status === 'vacant').length} Vacancies
                   </p>
-                  <p className="text-[11px] text-[#736E65] font-serif italic">Move-in Ready</p>
+                  <p className="text-[11px] text-[#736E65] font-serif italic">Ready to Move In</p>
                 </div>
                 <div>
                   <p className="font-serif font-bold text-lg text-[#1A1A1A]">M-PESA</p>
-                  <p className="text-[11px] text-[#736E65] font-serif italic">Instant Paybill Receipts</p>
+                  <p className="text-[11px] text-[#736E65] font-serif italic">Instant Rent Receipts</p>
                 </div>
                 <div>
                   <p className="font-serif font-bold text-lg text-[#1A1A1A]">24/7</p>
-                  <p className="text-[11px] text-[#736E65] font-serif italic">Resident Caretakers</p>
+                  <p className="text-[11px] text-[#736E65] font-serif italic">Caretakers on Site</p>
                 </div>
               </div>
             </div>
@@ -243,18 +254,18 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden border border-[#E5E0D8] bg-[#FAF8F5]">
                   <img
                     src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1000&q=80"
-                    alt="Ngotho Heights Westlands"
+                    alt="Apartments for rent in Nairobi"
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/80 via-transparent to-transparent flex flex-col justify-end p-5 text-white">
                     <span className="px-2.5 py-0.5 w-fit rounded-full text-[10px] font-semibold uppercase tracking-wider bg-white/20 backdrop-blur-md text-[#FAF8F5] border border-white/30 mb-1.5">
-                      Signature Estate
+                      Popular in Westlands
                     </span>
-                    <h3 className="text-xl font-serif font-bold">Ngotho Heights</h3>
+                    <h3 className="text-xl font-serif font-bold">{featuredProperty?.name || 'Western Heights Apartments'}</h3>
                     <p className="text-xs text-[#E5E0D8] flex items-center gap-1 font-serif italic">
                       <MapPin className="w-3.5 h-3.5 text-[#E5D7B7]" />
-                      Muthithi Road, Westlands, Nairobi
+                      {featuredProperty?.location || 'Westlands, Nairobi'}
                     </p>
                   </div>
                 </div>
@@ -263,7 +274,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                 <div className="grid grid-cols-3 gap-2 mt-3 text-center text-xs">
                   <div className="p-2.5 bg-[#FAF8F5] rounded-lg border border-[#E5E0D8]">
                     <p className="text-[10px] text-[#736E65] uppercase tracking-wider font-semibold">Rent From</p>
-                    <p className="font-serif font-bold text-[#1A1A1A] mt-0.5">KSh 28,000</p>
+                    <p className="font-serif font-bold text-[#1A1A1A] mt-0.5">
+                      {featuredProperty ? StorageService.formatCurrency((units.find((u) => u.propertyId === featuredProperty.id && u.status === 'vacant') || units.find((u) => u.propertyId === featuredProperty.id) || { monthlyRent: 0 }).monthlyRent, settings.currencySymbol) : 'KSh 24,000'}
+                    </p>
                   </div>
                   <div className="p-2.5 bg-[#FAF8F5] rounded-lg border border-[#E5E0D8]">
                     <p className="text-[10px] text-[#736E65] uppercase tracking-wider font-semibold">Water Supply</p>
@@ -289,13 +302,13 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
             <div>
               <div className="flex items-center gap-2 text-xs font-semibold text-[#7A571A] uppercase tracking-wider">
                 <Home className="w-3.5 h-3.5" />
-                <span>House Unit Directory</span>
+                <span>Houses for Rent</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A1A1A] mt-1">
-                Explore Available Residences
+                See the Houses that are Available
               </h2>
               <p className="text-xs text-[#736E65] font-serif italic mt-1">
-                Filter by estate location, layout type, and budget to find your next home.
+                Filter by area, house size and budget to find your next home.
               </p>
             </div>
 
@@ -312,14 +325,14 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               
               {/* Estate Selector */}
               <div>
-                <label className="block font-medium text-[#1A1A1A] mb-1">Estate / Property</label>
+                <label className="block font-medium text-[#1A1A1A] mb-1">Estate / Area</label>
                 <select
                   id="filter-estate-select"
                   value={selectedPropertyId}
                   onChange={(e) => setSelectedPropertyId(e.target.value)}
                   className="w-full px-3 py-2 bg-[#FAF8F5] border border-[#E5E0D8] rounded-lg text-[#1A1A1A] font-medium focus:outline-none focus:border-[#1A1A1A]"
                 >
-                  <option value="all">All Estates (Nairobi & Kiambu)</option>
+                  <option value="all">All Areas</option>
                   {properties.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.name} ({p.location})
@@ -330,14 +343,14 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
               {/* Layout Type */}
               <div>
-                <label className="block font-medium text-[#1A1A1A] mb-1">House Layout</label>
+                <label className="block font-medium text-[#1A1A1A] mb-1">House Size</label>
                 <select
-                  id="filter-type-select"
+                  id="filter-layout-select"
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
                   className="w-full px-3 py-2 bg-[#FAF8F5] border border-[#E5E0D8] rounded-lg text-[#1A1A1A] font-medium focus:outline-none focus:border-[#1A1A1A]"
                 >
-                  <option value="all">All Layouts</option>
+                  <option value="all">All Sizes</option>
                   <option value="Bedsitter">Bedsitter</option>
                   <option value="Studio">Studio</option>
                   <option value="1 Bedroom">1 Bedroom</option>
@@ -364,7 +377,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               {/* Max Rent Range */}
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="font-medium text-[#1A1A1A]">Max Monthly Rent</label>
+                  <label className="font-medium text-[#1A1A1A]">Monthly Rent Up To</label>
                   <span className="font-mono font-bold text-[#7A571A]">
                     {StorageService.formatCurrency(maxRent, settings.currencySymbol)}
                   </span>
@@ -372,8 +385,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                 <input
                   type="range"
                   min={10000}
-                  max={70000}
-                  step={2000}
+                  max={100000}
+                  step={5000}
                   value={maxRent}
                   onChange={(e) => setMaxRent(Number(e.target.value))}
                   className="w-full accent-[#1A1A1A] cursor-pointer"
@@ -390,7 +403,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                   onChange={(e) => setVacantOnly(e.target.checked)}
                   className="w-4 h-4 rounded text-[#1A1A1A] border-[#D8D2C5] focus:ring-0 focus:ring-offset-0"
                 />
-                <span className="font-medium text-[#1A1A1A]">Show only ready vacant units (Available immediately)</span>
+                <span className="font-medium text-[#1A1A1A]">Show only houses that are ready now</span>
               </label>
 
               {(selectedPropertyId !== 'all' || selectedType !== 'all' || searchQuery || maxRent < 60000 || !vacantOnly) && (
@@ -423,7 +436,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                   setSelectedPropertyId('all');
                   setSelectedType('all');
                   setVacantOnly(false);
-                  setMaxRent(70000);
+                  setMaxRent(100000);
                 }}
                 className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-[#1A1A1A] bg-[#FAF8F5] border border-[#E5E0D8] rounded-lg hover:bg-[#EFEAE1]"
               >
@@ -494,7 +507,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                         </p>
                         <p className="flex items-center gap-1.5">
                           <Droplets className="w-3.5 h-3.5 text-[#3B7A57] shrink-0" />
-                          <span>Borehole Water: KSh {unit.waterRatePerUnit}/unit meter</span>
+                          <span>Borehole Water: KSh {unit.waterRatePerUnit}/unit</span>
                         </p>
                         <p className="flex items-center gap-1.5">
                           <Zap className="w-3.5 h-3.5 text-[#7A571A] shrink-0" />
@@ -533,7 +546,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                       </button>
 
                       <a
-                        href={`tel:${property?.contactPhone || '+254700123456'}`}
+                        href={`tel:${property?.contactPhone || '0732075012'}`}
                         className="p-2 text-[#736E65] hover:text-[#1A1A1A] hover:bg-[#FAF8F5] rounded-lg border border-[#E5E0D8] transition-colors"
                         title="Call Caretaker"
                       >
@@ -557,13 +570,14 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           <div className="max-w-2xl space-y-2">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#7A571A] uppercase tracking-wider">
               <Building2 className="w-3.5 h-3.5" />
-              <span>Our Property Portfolio</span>
+              <span>Our Houses</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A1A1A]">
-              Featured Residential Developments
+              Our Houses in the Different Towns
             </h2>
             <p className="text-xs text-[#736E65] font-serif italic">
-              Carefully chosen residential settings balancing urban connectivity, family serenity, and high utility reliability.
+              We have picked good houses that are close to town, calm for the family, and with water and power that
+              work all the time.
             </p>
           </div>
 
@@ -616,8 +630,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                         </div>
                         <div className="p-2.5 bg-white rounded-lg border border-[#E5E0D8]">
                           <p className="text-[10px] text-[#736E65] font-semibold uppercase tracking-wider">Rent Paybill</p>
-                          <p className="font-mono font-bold text-[#1A1A1A] mt-0.5">522522</p>
-                          <p className="font-mono text-[11px] text-[#7A571A]">Acc: {property.accountNumber}</p>
+                          <p className="font-mono font-bold text-[#1A1A1A] mt-0.5">{settings.paybillNumber}</p>
+                          <p className="font-mono text-[11px] text-[#7A571A] break-all">Acc: {settings.paybillAccountNumber}</p>
                         </div>
                       </div>
                     </div>
@@ -626,7 +640,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                   {/* Estate Footer */}
                   <div className="p-5 border-t border-[#E5E0D8] bg-white flex items-center justify-between">
                     <span className="text-xs font-mono text-[#736E65]">
-                      {vacantEstateUnits.length} of {estateUnits.length} units ready to rent
+                      {vacantEstateUnits.length} of {estateUnits.length} houses ready now
                     </span>
 
                     <button
@@ -637,7 +651,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                       }}
                       className="inline-flex items-center gap-1 text-xs font-semibold text-[#1A1A1A] hover:text-[#7A571A] transition-colors"
                     >
-                      <span>Filter Units</span>
+                      <span>See Houses Here</span>
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
@@ -660,24 +674,24 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               <div className="lg:col-span-6 space-y-5">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF8F5] border border-[#E5E0D8] text-[11px] text-[#7A571A] font-semibold uppercase tracking-wider">
                   <Calculator className="w-3.5 h-3.5" />
-                  <span>Upfront Financial Transparency</span>
+                  <span>Upfront Costs, Made Clear</span>
                 </div>
 
                 <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A1A1A]">
-                  Calculate Your Exact Move-In Cost
+                  See How Much Money You Need to Move In
                 </h2>
 
                 <p className="text-xs sm:text-sm text-[#615C53] leading-relaxed font-serif">
-                  At Ngotho Properties, we don&apos;t believe in surprise lease clauses or hidden administrative levies. 
-                  Every prospective tenant receives a full, transparent breakdown of first-month rent, refundable security deposits, 
-                  and utility provisions before signing.
+                  We do not hide charges. Before you move in, we show you clearly the first month
+                  rent, the refundable deposit, and the small water and garbage fees. Move the
+                  slider below to see what you will pay.
                 </p>
 
                 {/* Interactive Sliders / Inputs */}
                 <div className="space-y-4 pt-2 text-xs">
                   <div>
                     <div className="flex justify-between items-center mb-1">
-                      <label className="font-medium text-[#1A1A1A]">Select Monthly Rent Benchmark</label>
+                      <label className="font-medium text-[#1A1A1A]">Select Your Monthly Rent</label>
                       <span className="font-mono font-bold text-sm text-[#1A1A1A]">
                         {StorageService.formatCurrency(calcRent, settings.currencySymbol)}
                       </span>
@@ -700,7 +714,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
                   <div className="grid grid-cols-2 gap-3 pt-2">
                     <div>
-                      <label className="block font-medium text-[#1A1A1A] mb-1">Refundable Water Deposit</label>
+                      <label className="block font-medium text-[#1A1A1A] mb-1">Water Connection Deposit</label>
                       <input
                         type="number"
                         value={calcWaterDeposit}
@@ -709,7 +723,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                       />
                     </div>
                     <div>
-                      <label className="block font-medium text-[#1A1A1A] mb-1">Garbage Maintenance</label>
+                      <label className="block font-medium text-[#1A1A1A] mb-1">Garbage Collection Fee</label>
                       <input
                         type="number"
                         value={calcGarbageFee}
@@ -727,10 +741,10 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                 <div className="bg-[#FAF8F5] rounded-xl border border-[#E5E0D8] p-6 sm:p-8 space-y-6">
                   <div className="border-b border-[#E5E0D8] pb-4">
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-[#7A571A]">
-                      Itemized Statement of Move-in
+                      Itemized Move-in Costs
                     </span>
                     <h3 className="text-xl font-serif font-bold text-[#1A1A1A] mt-1">
-                      Total Initial Capital Needed
+                      Total Money You Need to Move In
                     </h3>
                   </div>
 
@@ -743,21 +757,21 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                     </div>
                     <div className="flex justify-between items-center py-1 border-b border-[#E5E0D8]/60">
                       <div>
-                        <span className="text-[#615C53]">Security Deposit (100% Refundable)</span>
-                        <p className="text-[10px] text-[#736E65] font-serif italic">Returned upon lease conclusion</p>
+                        <span className="text-[#615C53]">Security Deposit (Refundable)</span>
+                        <p className="text-[10px] text-[#736E65] font-serif italic">You get this back when you leave</p>
                       </div>
                       <span className="font-mono font-bold text-[#1A1A1A]">
                         {StorageService.formatCurrency(calcRent * calcDepositMonths, settings.currencySymbol)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center py-1 border-b border-[#E5E0D8]/60">
-                      <span className="text-[#615C53]">Water Meter Connection Deposit</span>
+                      <span className="text-[#615C53]">Water Connection Deposit</span>
                       <span className="font-mono font-bold text-[#1A1A1A]">
                         {StorageService.formatCurrency(calcWaterDeposit, settings.currencySymbol)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center py-1 border-b border-[#E5E0D8]/60">
-                      <span className="text-[#615C53]">First Month Sanitation & Garbage</span>
+                      <span className="text-[#615C53]">First Month Garbage Collection</span>
                       <span className="font-mono font-bold text-[#1A1A1A]">
                         {StorageService.formatCurrency(calcGarbageFee, settings.currencySymbol)}
                       </span>
@@ -768,9 +782,11 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                   <div className="pt-3 border-t-2 border-[#1A1A1A] flex justify-between items-baseline">
                     <div>
                       <p className="text-xs font-serif font-bold text-[#1A1A1A] uppercase tracking-wider">
-                        Total Move-In Sum
+                        Total to Pay
                       </p>
-                      <p className="text-[11px] text-[#736E65] font-serif italic">Payable directly to M-PESA Paybill 522522</p>
+                      <p className="text-[11px] text-[#736E65] font-serif italic">
+                        Paid to M-PESA Paybill {settings.paybillNumber}, Account {settings.paybillAccountNumber}
+                      </p>
                     </div>
                     <p className="text-2xl font-serif font-bold text-[#1A1A1A]">
                       {StorageService.formatCurrency(
@@ -786,7 +802,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                       className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 text-xs font-semibold text-[#F9F7F2] bg-[#1A1A1A] hover:bg-[#2E2A26] rounded-lg transition-colors border border-[#1A1A1A]"
                     >
                       <Calendar className="w-3.5 h-3.5 text-[#E5D7B7]" />
-                      <span>Inquire for a House in this Budget</span>
+                      <span>Ask About a House in This Budget</span>
                     </a>
                   </div>
 
@@ -805,13 +821,13 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#7A571A] uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>The Ngotho Resident Promise</span>
+              <span>Our Promise to You</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A1A1A]">
-              Why Tenants Stay With Us For Years
+              Why People Like Living in Our Houses
             </h2>
             <p className="text-xs sm:text-sm text-[#736E65] font-serif italic">
-              We manage every home with the standard of care we would expect for our own families.
+              We take care of every house the way we would take care of our own home.
             </p>
           </div>
 
@@ -821,9 +837,10 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               <div className="w-10 h-10 rounded-lg bg-white border border-[#E5E0D8] flex items-center justify-center text-[#3B7A57]">
                 <Droplets className="w-5 h-5" />
               </div>
-              <h3 className="font-serif font-bold text-base text-[#1A1A1A]">Guaranteed Water Supply</h3>
+              <h3 className="font-serif font-bold text-base text-[#1A1A1A]">Water That Always Flows</h3>
               <p className="text-xs text-[#615C53] leading-relaxed font-serif">
-                Every property has dedicated borehole systems, underground reservoirs, and automatic booster pumps. Say goodbye to dry Nairobi mornings.
+                Every house has its own borehole tank and pump. You will not wake up in the morning
+                and find there is no water to cook or shower with.
               </p>
             </div>
 
@@ -831,9 +848,10 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               <div className="w-10 h-10 rounded-lg bg-white border border-[#E5E0D8] flex items-center justify-center text-[#7A571A]">
                 <Zap className="w-5 h-5" />
               </div>
-              <h3 className="font-serif font-bold text-base text-[#1A1A1A]">Individual Sub-meters</h3>
+              <h3 className="font-serif font-bold text-base text-[#1A1A1A]">Your Own Water & Power Meters</h3>
               <p className="text-xs text-[#615C53] leading-relaxed font-serif">
-                Token KPLC meters and independent water dials mean zero shared electric bills or disputed usage. You control exactly what you spend.
+                Every house has its own power and water meter. You only pay for what you use, and
+                there is no quarrel over sharing bills with neighbours.
               </p>
             </div>
 
@@ -841,9 +859,10 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               <div className="w-10 h-10 rounded-lg bg-white border border-[#E5E0D8] flex items-center justify-center text-[#1A1A1A]">
                 <ShieldCheck className="w-5 h-5" />
               </div>
-              <h3 className="font-serif font-bold text-base text-[#1A1A1A]">Prompt Fundi Dispatch</h3>
+              <h3 className="font-serif font-bold text-base text-[#1A1A1A]">Quick Repairs (Fundi)</h3>
               <p className="text-xs text-[#615C53] leading-relaxed font-serif">
-                Leaking tap or electrical switch? Our vetted network of plumbers, electricians, and carpenters are dispatched within 24 hours.
+                A leaking tap or a broken switch? We send our plumber or electrician within 24 hours
+                to sort it out for you.
               </p>
             </div>
 
@@ -851,9 +870,10 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               <div className="w-10 h-10 rounded-lg bg-white border border-[#E5E0D8] flex items-center justify-center text-[#2D6A4F]">
                 <CreditCard className="w-5 h-5" />
               </div>
-              <h3 className="font-serif font-bold text-base text-[#1A1A1A]">Direct M-PESA Paybill</h3>
+              <h3 className="font-serif font-bold text-base text-[#1A1A1A]">Pay Rent with M-PESA</h3>
               <p className="text-xs text-[#615C53] leading-relaxed font-serif">
-                Pay rent from your phone in seconds. Automated reconciliation generates instant receipts, keeping your financial record pristine.
+                You pay your rent from your phone in seconds. Right away you get an instant receipt,
+                so you always have proof that you paid.
               </p>
             </div>
 
@@ -863,24 +883,61 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       </section>
 
       {/* Tenant Paybill & Rent Instructions Guide */}
-      <section className="py-16 border-b border-[#E5E0D8] bg-[#FAF8F5]">
+      <section id="section-paybill" className="py-16 border-b border-[#E5E0D8] bg-[#FAF8F5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           
           <div className="max-w-2xl space-y-2">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#7A571A] uppercase tracking-wider">
               <CreditCard className="w-3.5 h-3.5" />
-              <span>Tenant Payment Protocol</span>
+              <span>How to Pay Rent</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A1A1A]">
-              Official M-PESA Rent Payment Guide
+              How to Pay Your Rent with M-PESA
             </h2>
             <p className="text-xs text-[#736E65] font-serif italic">
-              All rent and water payments must be channeled exclusively through the authorized Ngotho paybill.
+              Please pay all your rent through this one M-PESA number so that we record it well.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
+
+            {/* M-PESA visual illustration of exact payment details */}
+            <div className="bg-[#1A1A1A] rounded-xl border border-[#2E2B27] p-6 text-[#F9F7F2] md:row-span-2">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-base font-bold tracking-tight">M-PESA</span>
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-widest bg-[#E5D7B7] text-[#46350E]">Official Payment</span>
+              </div>
+              <div className="space-y-3 text-xs">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-[#2E2A25] border border-[#423C34]">
+                  <span className="text-[#A39E92]">Lipa na M-PESA</span>
+                  <span className="font-semibold">Pay Bill</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-[#2E2A25] border border-[#423C34]">
+                  <span className="text-[#A39E92]">Business No.</span>
+                  <span className="font-mono font-bold text-[#E5D7B7]">{settings.paybillNumber}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-[#2E2A25] border border-[#423C34]">
+                  <span className="text-[#A39E92]">Account No.</span>
+                  <span className="font-mono font-bold text-[#E5D7B7] break-all">{settings.paybillAccountNumber}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-[#2E2A25] border border-[#423C34]">
+                  <span className="text-[#A39E92]">Amount</span>
+                  <span className="font-semibold">Your monthly rent</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-[#115E3A] border border-[#1A7A4F]">
+                  <span className="text-[#BFE8D1]">Enter M-PESA PIN</span>
+                  <CheckCircle2 className="w-4 h-4 text-[#BFE8D1]" />
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-[#115E3A] border border-[#1A7A4F]">
+                  <span className="text-[#BFE8D1]">Receive SMS receipt</span>
+                  <Check className="w-4 h-4 text-[#BFE8D1]" />
+                </div>
+              </div>
+              <p className="text-[11px] text-[#B5AFA4] mt-4 leading-relaxed font-serif italic">
+                Copy the two numbers exactly, then enter your rent amount and confirm with your PIN.
+              </p>
+            </div>
+
             <div className="bg-white p-6 rounded-xl border border-[#E5E0D8] space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-serif font-bold text-lg text-[#1A1A1A]">Step 1</span>
@@ -888,7 +945,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               </div>
               <h4 className="font-semibold text-sm text-[#1A1A1A]">Lipa na M-PESA</h4>
               <p className="text-xs text-[#615C53] font-serif leading-relaxed">
-                Open your M-PESA menu on your phone, select <b>Lipa na M-PESA</b>, then tap <b>Paybill</b>.
+                Open your M-PESA menu on your phone, select <b>Lipa na M-PESA</b>, then tap <b>Pay Bill</b>.
               </p>
             </div>
 
@@ -897,11 +954,10 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                 <span className="font-serif font-bold text-lg text-[#1A1A1A]">Step 2</span>
                 <span className="w-6 h-6 rounded-full bg-[#FAF8F5] border border-[#E5E0D8] text-xs flex items-center justify-center font-bold">2</span>
               </div>
-              <h4 className="font-semibold text-sm text-[#1A1A1A]">Enter Business & Account</h4>
+              <h4 className="font-semibold text-sm text-[#1A1A1A]">Enter Business & Account No.</h4>
               <div className="text-xs text-[#615C53] font-serif space-y-1.5 leading-relaxed">
-                <p>Business Number: <b className="font-mono text-[#1A1A1A]">522522</b></p>
-                <p>Account Number: <b className="font-mono text-[#7A571A]">[ESTATE]-[UNIT]</b></p>
-                <p className="text-[11px] text-[#736E65] italic">e.g. NGOTHO-HGT-A101 or NGOTHO-PLM-B02</p>
+                <p>Business Number: <b className="font-mono text-[#1A1A1A]">{settings.paybillNumber}</b></p>
+                <p>Account Number: <b className="font-mono break-all text-[#7A571A]">{settings.paybillAccountNumber}</b></p>
               </div>
             </div>
 
@@ -910,9 +966,10 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                 <span className="font-serif font-bold text-lg text-[#1A1A1A]">Step 3</span>
                 <span className="w-6 h-6 rounded-full bg-[#FAF8F5] border border-[#E5E0D8] text-xs flex items-center justify-center font-bold">3</span>
               </div>
-              <h4 className="font-semibold text-sm text-[#1A1A1A]">Confirm & Receive Receipt</h4>
+              <h4 className="font-semibold text-sm text-[#1A1A1A]">Finish and Get Your Receipt</h4>
               <p className="text-xs text-[#615C53] font-serif leading-relaxed">
-                Enter your exact rent amount and M-PESA PIN. You will receive an immediate SMS confirmation followed by our system ledger receipt.
+                Enter your rent amount and your M-PESA PIN. You will get an SMS right away, then an
+                official receipt from us.
               </p>
             </div>
 
@@ -930,25 +987,26 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
             <div className="lg:col-span-5 space-y-6">
               <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#7A571A] uppercase tracking-wider">
                 <Calendar className="w-3.5 h-3.5" />
-                <span>On-Site Appointment</span>
+                <span>On-Site Visit</span>
               </div>
 
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A1A1A]">
-                Schedule a Guided House Tour
+                Come and See the House
               </h2>
 
               <p className="text-xs sm:text-sm text-[#615C53] leading-relaxed font-serif">
-                Physical property viewings are hosted Monday through Saturday by our resident caretakers. 
-                Fill out the appointment request and we will confirm within 2 business hours.
+                You are welcome to come view any house from Monday to Saturday. Our caretakers
+                on site will show you around. Fill in the form below and we will get back to
+                you within 2 hours of working time.
               </p>
 
               <div className="space-y-4 pt-2 text-xs">
                 <div className="flex items-start gap-3 p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E5E0D8]">
                   <Phone className="w-4 h-4 text-[#7A571A] shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-semibold text-[#1A1A1A]">Direct Caretaker Hotline</p>
-                    <p className="font-mono text-[#736E65]">+254 700 123 456 / +254 712 345 678</p>
-                    <p className="text-[11px] text-[#736E65] font-serif italic">Available Mon - Sat, 8:00 AM - 5:30 PM</p>
+                    <p className="font-semibold text-[#1A1A1A]">Call or SMS the Caretaker</p>
+                    <p className="font-mono text-[#736E65]">0732 075 012</p>
+                    <p className="text-[11px] text-[#736E65] font-serif italic">Open Mon - Sat, 8:00 AM - 5:30 PM</p>
                   </div>
                 </div>
 
@@ -971,9 +1029,10 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                     <div className="w-12 h-12 rounded-full bg-[#EBF5EE] text-[#2D6A4F] border border-[#CDE5D6] flex items-center justify-center mx-auto">
                       <Check className="w-6 h-6" />
                     </div>
-                    <h3 className="font-serif font-bold text-xl text-[#1A1A1A]">Viewing Request Received!</h3>
+                    <h3 className="font-serif font-bold text-xl text-[#1A1A1A]">Your Visit Has Been Booked!</h3>
                     <p className="text-xs text-[#615C53] font-serif italic max-w-md mx-auto">
-                      Thank you! The site caretaker has been notified. We will phone you directly to confirm gate access and directions.
+                      Thank you! The caretaker has been told. We will call you to confirm the day,
+                      the time and directions to the house.
                     </p>
                     <button
                       type="button"
@@ -1132,13 +1191,13 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
           <div className="text-center max-w-xl mx-auto space-y-2">
             <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#7A571A] uppercase tracking-wider">
               <UserCheck className="w-3.5 h-3.5" />
-              <span>Resident Community</span>
+              <span>What Tenants Say</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1A1A1A]">
-              Voices from Ngotho Estates
+              What Our Tenants Say
             </h2>
             <p className="text-xs text-[#736E65] font-serif italic">
-              Real accounts from families and professionals living across our properties.
+              Stories from people who live in our houses today.
             </p>
           </div>
 
@@ -1146,31 +1205,34 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
             
             <div className="p-6 bg-white rounded-xl border border-[#E5E0D8] space-y-4">
               <p className="text-xs text-[#595349] leading-relaxed font-serif italic">
-                &ldquo;Water was my biggest headache in previous Nairobi apartments. At Ngotho Heights, the borehole is completely automated. I haven&apos;t had a single dry morning in 2 years.&rdquo;
+                &ldquo;Water used to be a big problem in the houses I lived in before. Here at Sunalia
+                Gardens the water never stops. I have not had one dry morning in two years.&rdquo;
               </p>
               <div className="pt-2 border-t border-[#E5E0D8] text-xs">
                 <p className="font-serif font-bold text-[#1A1A1A]">David Karanja</p>
-                <p className="text-[11px] text-[#736E65]">Resident at Ngotho Heights, Westlands</p>
+                <p className="text-[11px] text-[#736E65]">Tenant at Sunalia Gardens, Roysambu</p>
               </div>
             </div>
 
             <div className="p-6 bg-white rounded-xl border border-[#E5E0D8] space-y-4">
               <p className="text-xs text-[#595349] leading-relaxed font-serif italic">
-                &ldquo;The M-PESA paybill receipts are instant, and John the caretaker is very responsive. Whenever there&apos;s a plumbing fix needed, the fundi arrives the same afternoon.&rdquo;
+                &ldquo;The receipt comes to my phone the moment I pay, and the caretaker answers quickly.
+                When the pipe leaked, the fundi came the same afternoon and fixed it.&rdquo;
               </p>
               <div className="pt-2 border-t border-[#E5E0D8] text-xs">
                 <p className="font-serif font-bold text-[#1A1A1A]">Sarah Achieng</p>
-                <p className="text-[11px] text-[#736E65]">Resident at Ngotho Palms Court, Ruiru</p>
+                <p className="text-[11px] text-[#736E65]">Tenant at Cascade Apartments, Kilimani</p>
               </div>
             </div>
 
             <div className="p-6 bg-white rounded-xl border border-[#E5E0D8] space-y-4">
               <p className="text-xs text-[#595349] leading-relaxed font-serif italic">
-                &ldquo;Clean perimeter wall, good security, and honest water meter billing. No fabricated utility bills at the end of the month. Highly recommended management.&rdquo;
+                &ldquo;The place is safe and the water meter is fair — I only pay for what I use.
+                No surprise bills at the end of the month. I really recommend these houses.&rdquo;
               </p>
               <div className="pt-2 border-t border-[#E5E0D8] text-xs">
                 <p className="font-serif font-bold text-[#1A1A1A]">Brian Mwenda</p>
-                <p className="text-[11px] text-[#736E65]">Resident at Ngotho Executive Suites, Kilimani</p>
+                <p className="text-[11px] text-[#736E65]">Tenant at Gem Court Residences, South B</p>
               </div>
             </div>
 
@@ -1199,11 +1261,14 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               </div>
 
               <p className="text-xs text-[#736E65] font-serif leading-relaxed max-w-sm">
-                Ngotho Real Estate & Property Management Ltd manages premium residential courts, modern apartment complexes, and gated suites across Nairobi, Kiambu, and Nakuru.
+                Ngotho Properties rents out good, safe houses in Nairobi, Nakuru, Mombasa, Kisumu and
+                Thika. We run every house with a caretaker on site, clean water, and fair M-PESA rent
+                receipts.
               </p>
 
               <div className="pt-1 text-[11px] text-[#736E65] space-y-1 font-mono">
-                <p>Corporate Paybill: 522522</p>
+                <p>Paybill for Rent: {settings.paybillNumber}</p>
+                <p className="break-all">Account No: {settings.paybillAccountNumber}</p>
                 <p>Registration: CPR/2021/89421 • Kenya Real Estate Board</p>
               </div>
             </div>
@@ -1212,8 +1277,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               <h4 className="font-serif font-bold text-[#1A1A1A] text-sm">Quick Links</h4>
               <ul className="space-y-1.5 text-xs">
                 <li><a href="#section-listings" className="hover:text-[#1A1A1A]">Available Houses</a></li>
-                <li><a href="#section-viewing" className="hover:text-[#1A1A1A]">Book a Viewing Tour</a></li>
-                <li><a href="#section-listings" className="hover:text-[#1A1A1A]">Rent & Move-in Calculator</a></li>
+                <li><a href="#section-viewing" className="hover:text-[#1A1A1A]">Book a Visit</a></li>
+                <li><a href="#section-listings" className="hover:text-[#1A1A1A]">Move-in Cost Calculator</a></li>
                 <li>
                   <button onClick={onOpenManagementPortal} className="hover:text-[#1A1A1A] font-semibold text-[#7A571A]">
                     Landlord & Staff Console →
@@ -1229,17 +1294,19 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                 Muthithi Road, Westlands<br />
                 Nairobi, Kenya
               </p>
-              <p className="font-mono text-xs pt-1">Tel: +254 700 123 456</p>
+              <p className="font-mono text-xs pt-1">Tel: 0732 075 012</p>
               <p className="text-xs">info@ngothomanagement.co.ke</p>
             </div>
 
           </div>
 
           <div className="pt-8 border-t border-[#E5E0D8] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#8A8477]">
-            <p>© {new Date().getFullYear()} Ngotho Real Estate & Property Management Ltd. All rights reserved.</p>
-            <div className="flex items-center gap-4">
-              <span>Equal Housing Opportunity</span>
-              <span>•</span>
+            <p className="font-serif italic leading-relaxed">
+              © {new Date().getFullYear()} Ngotho Real Estate & Property Management Ltd. Rates, deposits and
+              house availability can change, so please confirm with us before paying. All houses are open to
+              all Kenyans — we do not discriminate on tribe, religion or gender.
+            </p>
+            <div className="flex items-center gap-4 shrink-0">
               <button onClick={onOpenManagementPortal} className="hover:text-[#1A1A1A] font-medium underline">
                 Access Internal Management Portal
               </button>

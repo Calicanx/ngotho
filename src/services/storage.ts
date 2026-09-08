@@ -18,14 +18,15 @@ import {
 } from '../data/mockData';
 
 const STORAGE_KEYS = {
-  PROPERTIES: 'ngotho_properties_v1',
-  UNITS: 'ngotho_units_v1',
-  TENANTS: 'ngotho_tenants_v1',
-  PAYMENTS: 'ngotho_payments_v1',
-  MAINTENANCE: 'ngotho_maintenance_v1',
-  UTILITIES: 'ngotho_utilities_v1',
-  NOTIFICATIONS: 'ngotho_notifications_v1',
+  PROPERTIES: 'ngotho_properties_v2',
+  UNITS: 'ngotho_units_v2',
+  TENANTS: 'ngotho_tenants_v2',
+  PAYMENTS: 'ngotho_payments_v2',
+  MAINTENANCE: 'ngotho_maintenance_v2',
+  UTILITIES: 'ngotho_utilities_v2',
+  NOTIFICATIONS: 'ngotho_notifications_v2',
   SETTINGS: 'ngotho_settings_v1',
+  AUTH: 'ngotho_auth_v1',
 };
 
 export interface AppSettings {
@@ -36,6 +37,7 @@ export interface AppSettings {
   landlordEmail: string;
   landlordAddress: string;
   paybillNumber: string;
+  paybillAccountNumber: string;
   rentDueDay: number; // e.g. 5th of the month
   lateFeePercent: number; // e.g. 5%
 }
@@ -44,10 +46,11 @@ export const DEFAULT_SETTINGS: AppSettings = {
   currencySymbol: 'KSh',
   currencyCode: 'KES',
   landlordCompanyName: 'Ngotho Real Estate & Property Management Ltd',
-  landlordPhone: '+254 700 123 456',
+  landlordPhone: '0732 075 012',
   landlordEmail: 'info@ngothomanagement.co.ke',
   landlordAddress: 'Ngotho Tower, 4th Floor, Westlands, Nairobi, Kenya',
   paybillNumber: '522522',
+  paybillAccountNumber: '4407830150413228',
   rentDueDay: 5,
   lateFeePercent: 5,
 };
@@ -155,6 +158,23 @@ export class StorageService {
 
   static saveSettings(data: AppSettings): void {
     localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(data));
+  }
+
+  static getAuth(): { role: string; phone: string } | null {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.AUTH);
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  static saveAuth(auth: { role: string; phone: string }): void {
+    localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(auth));
+  }
+
+  static clearAuth(): void {
+    localStorage.removeItem(STORAGE_KEYS.AUTH);
   }
 
   static resetToDefault(): void {

@@ -27,6 +27,8 @@ import { MaintenanceView } from './components/MaintenanceView';
 import { UtilitiesView } from './components/UtilitiesView';
 import { AnalyticsView } from './components/AnalyticsView';
 import { SettingsView } from './components/SettingsView';
+import { SignInView } from './components/SignInView';
+import { TenantPortalView } from './components/TenantPortalView';
 
 // Modals
 import { ReceiptModal } from './components/ReceiptModal';
@@ -47,8 +49,24 @@ import {
   Wrench, 
   Droplets, 
   BarChart3, 
-  Settings as SettingsIcon 
+  Settings as SettingsIcon,
+  LogOut
 } from 'lucide-react';
+
+const LANDLORD_PHONE = '0700000000';
+
+interface AuthState {
+  role: 'landlord' | 'tenant';
+  phone: string;
+}
+
+// Normalize a Kenyan phone number into a canonical form for comparison
+function normalizePhone(phone: string): string {
+  let p = phone.replace(/[\s-]/g, '');
+  if (p.startsWith('+')) p = p.slice(1);
+  if (p.startsWith('254')) p = '0' + p.slice(3);
+  return p;
+}
 
 export default function App() {
   // State from Storage
@@ -60,6 +78,10 @@ export default function App() {
   const [utilities, setUtilities] = useState<UtilityReading[]>(() => StorageService.getUtilities());
   const [notifications, setNotifications] = useState<AppNotification[]>(() => StorageService.getNotifications());
   const [settings, setSettings] = useState<AppSettings>(() => StorageService.getSettings());
+
+  // Authentication
+  const [auth, setAuth] = useState<AuthState | null>(() => StorageService.getAuth());
+  const [showSignIn, setShowSignIn] = useState(false);
 
   // Navigation
   const [activeTab, setActiveTab] = useState<string>('landing');
@@ -116,6 +138,56 @@ export default function App() {
   useEffect(() => {
     StorageService.saveSettings(settings);
   }, [settings]);
+
+  useEffect(() => {
+    if (auth) {
+      StorageService.saveAuth(auth);
+    } else {
+      StorageService.clearAuth();
+    }
+  }, [auth]);
+
+  // Authentication handlers
+  const handleOpenSignIn = () => {
+    setShowSignIn(true);
+  };
+
+  const handleCloseSignIn = () => {
+    setShowSignIn(false);
+    setActiveTab('landing');
+  };
+
+  // Navigation that respects authentication: management tabs require landlord sign-in
+  const navigateToTab = (tab: string) => {
+    if (tab === 'landing') {
+      setActiveTab('landing');
+      return;
+    }
+    if (!isLandlord) {
+      // non-landlords (or unauthenticated users) must sign in to reach management tabs
+      setShowSignIn(true);
+      return;
+    }
+    setActiveTab(tab);
+  };
+
+  const handleSignIn = (phone: string) => {
+    const normalized = normalizePhone(phone);
+    if (normalized === LANDLORD_PHONE) {
+      setAuth({ role: 'landlord', phone: normalized });
+      setShowSignIn(false);
+      setActiveTab('dashboard');
+    } else {
+      setAuth({ role: 'tenant', phone: normalized });
+      setShowSignIn(false);
+      setActiveTab('tenant');
+    }
+  };
+
+  const handleSignOut = () => {
+    setAuth(null);
+    setActiveTab('landing');
+  };
 
   // Handlers
   const handleMarkNotificationRead = (id: string) => {
@@ -278,13 +350,57 @@ export default function App() {
     { id: 'settings', label: 'Settings & Backup', icon: SettingsIcon },
   ];
 
+  const isLandlord = auth?.role === 'landlord';
+  const isTenant = auth?.role === 'tenant';
+
   return (
     <div className="min-h-screen bg-[#F9F7F2] text-[#1A1A1A] font-sans flex flex-col selection:bg-[#E2DBCB] selection:text-[#1A1A1A]">
-      {/* Top Application Header */}
+      {/* AUTH HANDLING */}
+      {!auth ? (
+        <>
+      {/* Top Application Header - Public */}
       <Header
         notifications={notifications}
         onMarkNotificationRead={handleMarkNotificationRead}
         onNavigateTab={(tab) => setActiveTab(tab)}
+        onOpenRecordPayment={() => {}}
+        onOpenAddTenant={() => {}}
+        onOpenAddUnit={() => {}}
+        onOpenAddMaintenance={() => {}}
+        searchQuery={globalSearch}
+        onSearchChange={setGlobalSearch}
+        activeTab="landing"
+        userRole={null}
+        onSignOut={handleSignOut}
+      />
+
+      {/* Public Landing Page */}
+      <LandingPageView
+        properties={properties}
+        units={units}
+        tenants={tenants}
+        settings={settings}
+        onOpenManagementPortal={handleOpenSignIn}
+      />
+
+      {/* Sign In Popup */}
+      {(showSignIn || activeTab !== 'landing') && (
+        <SignInView onSignIn={handleSignIn} onClose={handleCloseSignIn} />
+      )}
+        </>
+      ) : isTenant && !isLandlord ? (
+        <TenantPortalView
+          phone={auth?.phone ?? ''}
+          settings={settings}
+          onSignOut={handleSignOut}
+        />
+      ) : (
+        <>
+      {/* Top Application Header */}
+      <Header
+        notifications={notifications}
+        onMarkNotificationRead={handleMarkNotificationRead}
+        onNavigateTab={navigateToTab}
         onOpenRecordPayment={() => handleOpenRecordPayment()}
         onOpenAddTenant={() => {
           setEditingTenant(undefined);
@@ -301,6 +417,8 @@ export default function App() {
         searchQuery={globalSearch}
         onSearchChange={setGlobalSearch}
         activeTab={activeTab}
+        userRole={auth?.role ?? null}
+        onSignOut={handleSignOut}
       />
 
       {/* Navigation Sub-Header Bar */}
@@ -484,7 +602,7 @@ export default function App() {
                 <span className="w-2 h-2 rounded-full bg-[#2D5A34]"></span>
                 <span className="font-serif font-bold text-sm tracking-tight text-[#1A1A1A]">Ngotho Estates & Rental Management</span>
                 <span className="hidden md:inline text-[#8F8A7F]">•</span>
-                <span className="hidden md:inline italic text-[#736E65]">Edition September 2026</span>
+                <span className="hidden md:inline italic text-[#736E65]">Edition 2026</span>
               </div>
               <div className="text-[#8F8A7F] text-center sm:text-right font-mono text-[11px]">
                 <span>Paybill: <strong className="text-[#1A1A1A] font-medium">{settings.paybillNumber}</strong> • Contact: {settings.landlordPhone}</span>
@@ -591,6 +709,8 @@ export default function App() {
             setEditingMaintenance(undefined);
           }}
         />
+      )}
+        </>
       )}
     </div>
   );

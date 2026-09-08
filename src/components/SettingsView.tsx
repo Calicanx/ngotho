@@ -182,6 +182,17 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 className="w-full px-3 py-2 bg-[#FAF8F5] border border-[#E5E0D8] rounded-lg text-[#1A1A1A] focus:outline-none focus:border-[#1A1A1A]"
               />
             </div>
+
+            <div>
+              <label className="block font-medium text-[#1A1A1A] mb-1">Default Paybill Account Number</label>
+              <input
+                type="text"
+                value={formData.paybillAccountNumber}
+                onChange={(e) => setFormData({ ...formData, paybillAccountNumber: e.target.value })}
+                className="w-full px-3 py-2 bg-[#FAF8F5] border border-[#E5E0D8] rounded-lg text-[#1A1A1A] focus:outline-none focus:border-[#1A1A1A]"
+              />
+              <p className="text-[10px] text-[#8A8477] mt-1">Editable anytime by the admin. Include this number when tenants pay rent via M-PESA.</p>
+            </div>
           </div>
         </div>
 
